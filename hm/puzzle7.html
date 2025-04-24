@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramayana Family Crossword</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .crossword {
+            display: grid;
+            grid-template-columns: repeat(15, 40px);
+            gap: 2px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid #000;
+            text-transform: uppercase;
+            position: relative;
+            background-color: #fff;
+        }
+        .black-cell {
+            background-color: #000;
+        }
+        .subscript {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .correct {
+            background-color: #90EE90 !important;
+        }
+        .incorrect {
+            background-color: #FF6347 !important;
+        }
+        .hints {
+            margin-top: 20px;
+            text-align: left;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ramayana Family & Relationships Crossword</h1>
+    <div class="crossword" id="crossword"></div>
+    <button onclick="checkAnswers()">Submit</button>
+    <p id="score"></p>
+
+    <div class="hints">
+        <h2>Hints:</h2>
+        <strong>Across:</strong><br>
+        1️⃣ Wife of Rama_______<br>
+        2️⃣ Rama's father_______<br>
+        3️⃣ Mother of Lakshman________<br>
+        4️⃣ Wife of Bharat_______<br>
+        5️⃣ Brother of Rama_______<br>
+        <br>
+        <strong>Down:</strong><br>
+        6️⃣ Mother of Rama________<br>
+        7️⃣ Stepmother of Rama_______<br>
+        8️⃣ Wife of Shatrughna________<br>
+        9️⃣ Brother of Lakshman________<br>
+        🔟 Rama’s faithful devotee_______
+    </div>
+
+    <script>
+        const gridSize = 15;
+        const crosswordGrid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
+
+        const words = [
+            { word: "SITA", row: 0, col: 0, dir: "across", number: 1 },
+            { word: "DASHARATHA", row: 2, col: 0, dir: "across", number: 2 },
+            { word: "SUMITRA", row: 4, col: 0, dir: "across", number: 3 },
+            { word: "MANDAVI", row: 6, col: 0, dir: "across", number: 4 },
+            { word: "LAKSHMAN", row: 8, col: 0, dir: "across", number: 5 },
+            { word: "KAUSHALYA", row: 0, col: 4, dir: "down", number: 6 },
+            { word: "KAIKEYI", row: 0, col: 6, dir: "down", number: 7 },
+            { word: "SHRUTAKIRTI", row: 0, col: 8, dir: "down", number: 8 },
+            { word: "BHARAT", row: 0, col: 10, dir: "down", number: 9 },
+            { word: "HANUMAN", row: 0, col: 12, dir: "down", number: 10 }
+        ];
+
+        const crosswordContainer = document.getElementById("crossword");
+        let inputs = [];
+
+        words.forEach(({ word, row, col, dir, number }) => {
+            for (let i = 0; i < word.length; i++) {
+                const r = dir === "across" ? row : row + i;
+                const c = dir === "across" ? col + i : col;
+                if (crosswordGrid[r][c] === "") crosswordGrid[r][c] = word[i];
+            }
+            const sr = dir === "across" ? row : row;
+            const sc = dir === "across" ? col : col;
+            crosswordGrid[sr][sc] += number;
+        });
+
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+
+                if (crosswordGrid[i][j] === "") {
+                    cell.classList.add("black-cell");
+                } else {
+                    let match = crosswordGrid[i][j].match(/([A-Z])+(\d+)?/);
+                    let letter = match[1];
+                    let sub = match[2];
+                    let input = document.createElement("input");
+                    input.type = "text";
+                    input.maxLength = 1;
+                    input.style.width = "100%";
+                    input.style.height = "100%";
+                    input.style.border = "none";
+                    input.style.textAlign = "center";
+                    input.style.fontSize = "18px";
+                    input.style.backgroundColor = "white";
+                    input.style.textTransform = "uppercase";
+                    cell.appendChild(input);
+                    inputs.push({ input, correctLetter: letter });
+
+                    if (sub) {
+                        const subscriptElement = document.createElement("span");
+                        subscriptElement.classList.add("subscript");
+                        subscriptElement.textContent = sub;
+                        cell.appendChild(subscriptElement);
+                    }
+                }
+                crosswordContainer.appendChild(cell);
+            }
+        }
+
+        function checkAnswers() {
+            let score = 0;
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].input.value.toUpperCase() === inputs[i].correctLetter) {
+                    inputs[i].input.style.backgroundColor = "#90EE90";
+                    score++;
+                } else {
+                    inputs[i].input.style.backgroundColor = "#FF6347";
+                }
+            }
+
+            document.getElementById("score").innerText = `Your Score: ${score}/${inputs.length}`;
+        }
+    </script>
+</body>
+</html>

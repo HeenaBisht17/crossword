@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramayana Festival Crossword</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            text-align: center;
+            padding: 20px;
+        }
+        .crossword {
+            display: grid;
+            grid-template-columns: repeat(13, 40px);
+            gap: 2px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            border: 1px solid #000;
+            background-color: #fff;
+        }
+        .black-cell {
+            background-color: #000;
+        }
+        .cell input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+        .subscript {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .correct {
+            background-color: #90EE90 !important;
+        }
+        .incorrect {
+            background-color: #FF6347 !important;
+        }
+        .hints {
+            margin-top: 30px;
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Festival and Celebrations Crossword Puzzle</h1>
+    <div class="crossword" id="crossword"></div>
+    <button onclick="checkAnswers()">Submit</button>
+    <p id="score"></p>
+
+    <div class="hints">
+        <h2>Hints:</h2>
+        <strong>Across:</strong><br>
+        1️⃣ The demoness killed by Ram and Lakshman_________<br>
+        2️⃣ Festival when Lord Ram returned to Ayodhya_______<br>
+        3️⃣ Hanuman set Lanka on fire________<br>
+        4️⃣ Ravan kidnapped Sita________<br>
+        5️⃣ Lakshman drew this to protect Sita________<br>
+
+        <br><strong>Down:</strong><br>
+        6️⃣ Bridge built to reach Lanka_______<br>
+        7️⃣ Ram broke this bow to marry Sita_________<br>
+        8️⃣ Hanuman brought this herb to save Lakshman_________<br>
+        9️⃣ Ram defeated Ravan in this war_______<br>
+        🔟 Jatayu tried to stop Ravan________<br>
+    </div>
+
+    <script>
+        const gridSize = 13;
+        const crosswordContainer = document.getElementById("crossword");
+
+        const layout = Array(gridSize).fill(null).map(() => Array(gridSize).fill(""));
+
+        const words = [
+            { word: "TADAKA", row: 0, col: 0, dir: "across", clue: 1 },
+            { word: "DIWALI", row: 1, col: 0, dir: "across", clue: 2 },
+            { word: "LANKADAHAN", row: 2, col: 0, dir: "across", clue: 3 },
+            { word: "SITAHARAN", row: 3, col: 0, dir: "across", clue: 4 },
+            { word: "LAKSHMANREKHA", row: 4, col: 0, dir: "across", clue: 5 },
+
+            { word: "RAMSETU", row: 0, col: 6, dir: "down", clue: 6 },
+            { word: "SHIVDHANUSH", row: 0, col: 8, dir: "down", clue: 7 },
+            { word: "SANJEEVANI", row: 0, col: 10, dir: "down", clue: 8 },
+            { word: "RAMRAVANYUDH", row: 0, col: 12, dir: "down", clue: 9 },
+            { word: "JATAYUYUDH", row: 0, col: 11, dir: "down", clue: 10 },
+        ];
+
+        const answers = [];
+
+        words.forEach(({ word, row, col, dir, clue }) => {
+            for (let i = 0; i < word.length; i++) {
+                const r = dir === "across" ? row : row + i;
+                const c = dir === "across" ? col + i : col;
+                layout[r][c] = word[i];
+                answers.push({ row: r, col: c, letter: word[i] });
+            }
+        });
+
+        const inputs = [];
+
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                const expected = layout[i][j];
+
+                if (!expected) {
+                    cell.classList.add("black-cell");
+                } else {
+                    const input = document.createElement("input");
+                    input.maxLength = 1;
+                    cell.appendChild(input);
+                    inputs.push({ input, row: i, col: j, expected });
+
+                    const isFirst = words.some(w =>
+                        w.row === i && w.col === j
+                    );
+                    if (isFirst) {
+                        const number = words.find(w => w.row === i && w.col === j)?.clue;
+                        if (number) {
+                            const sub = document.createElement("span");
+                            sub.className = "subscript";
+                            sub.textContent = number;
+                            cell.appendChild(sub);
+                        }
+                    }
+                }
+
+                crosswordContainer.appendChild(cell);
+            }
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            inputs.forEach(({ input, expected }) => {
+                const val = input.value.toUpperCase();
+                if (val === expected) {
+                    input.classList.add("correct");
+                    input.classList.remove("incorrect");
+                    score++;
+                } else {
+                    input.classList.add("incorrect");
+                    input.classList.remove("correct");
+                }
+            });
+            document.getElementById("score").innerText = `Your Score: ${score}/${inputs.length}`;
+        }
+    </script>
+</body>
+</html>

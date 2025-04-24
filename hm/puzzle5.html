@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayodhya Kingdom Crossword</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f8f8;
+        }
+        .crossword {
+            display: grid;
+            grid-template-columns: repeat(13, 40px);
+            gap: 2px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid #000;
+            text-transform: uppercase;
+            position: relative;
+            background-color: #fff;
+        }
+        .black-cell {
+            background-color: #000;
+        }
+        .subscript {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .correct {
+            background-color: #90EE90 !important; /* Green for correct */
+        }
+        .incorrect {
+            background-color: #FF6347 !important; /* Red for incorrect */
+        }
+        .hints {
+            margin-top: 20px;
+            text-align: left;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ayodhya Kingdom Crossword</h1>
+    <div class="crossword" id="crossword"></div>
+    <button onclick="checkAnswers()">Submit</button>
+    <p id="score"></p>
+    
+    <div class="hints">
+        <h2>Hints:</h2>
+        <strong>Across:</strong><br>
+        1️⃣ King who found baby Sita while plowing a field – JANAK_____<br>
+        2️⃣ Sita’s trial by fire to prove her purity – AGNI PARIKSHA_______<br>
+        3️⃣ The wise minister of Ayodhya – SUMANTH<br>
+    </div>
+
+    <script>
+        const crosswordGrid = [
+            ["N1", "A", "N", "D", "I", "G", "R", "M", "D10", "S8", "D3", ""],
+            ["", "", "", "", "", "", "", "", "I", "A", "A", ""],
+            ["", "", "", "B4", "", "", "", "", "W", "R", "S", ""],
+            ["", "", "", "H", "", "", "", "", "A", "A", "H", ""],
+            ["", "", "K6", "A", "U", "S", "H", "A", "L", "Y", "A", ""],
+            ["", "", "", "R", "", "", "", "", "I", "U", "R", ""],
+            ["S3", "U", "M", "A", "N", "T", "H", "K", "", "", "A", ""],
+            ["", "", "", "T", "", "", "A", "", "", "", "T", ""],
+            ["", "", "V7", "A", "S", "H", "I", "S", "H", "T", "H", "A"],
+            ["", "", "", "", "", "", "K", "", "", "", "", ""],
+            ["", "", "R", "A", "M", "S", "E", "T", "U", "", "", ""],
+            ["", "", "", "", "", "", "Y", "", "", "", "", ""],
+            ["", "", "", "S2", "U", "M", "I", "T", "R", "A", "", ""]
+        ];
+
+        const correctAnswers = [
+            "N1", "A", "N", "D", "I", "G", "R", "M", "D10", "S8", "D3", "",
+            "", "", "", "", "", "", "", "", "I", "A", "A", "", 
+            "", "", "", "B4", "", "", "", "", "W", "R", "S", "",
+            "", "", "", "H", "", "", "", "", "A", "A", "H", "",
+            "", "", "K6", "A", "U", "S", "H", "A", "L", "Y", "A", "",
+            "", "", "", "R", "", "", "", "", "I", "U", "R", "",
+            "S3", "U", "M", "A", "N", "T", "H", "K", "", "", "A", "",
+            "", "", "", "T", "", "", "A", "", "", "", "T", "",
+            "", "", "V7", "A", "S", "H", "I", "S", "H", "T", "H", "A",
+            "", "", "", "", "", "", "K", "", "", "", "", "",
+            "", "", "R", "A", "M", "S", "E", "T", "U", "", "", "",
+            "", "", "", "", "", "", "Y", "", "", "", "", "",
+            "", "", "", "S2", "U", "M", "I", "T", "R", "A", "", ""
+        ];
+
+        const crosswordContainer = document.getElementById("crossword");
+        let inputs = [];
+
+        for (let i = 0; i < crosswordGrid.length; i++) {
+            for (let j = 0; j < crosswordGrid[i].length; j++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+
+                if (crosswordGrid[i][j] === "") {
+                    cell.classList.add("black-cell");
+                } else {
+                    let subscript = crosswordGrid[i][j].match(/\d+/g);
+                    let input = document.createElement("input");
+                    input.type = "text";
+                    input.maxLength = 1;
+                    input.style.width = "100%";
+                    input.style.height = "100%";
+                    input.style.border = "none";
+                    input.style.textAlign = "center";
+                    input.style.fontSize = "18px";
+                    input.style.backgroundColor = "white";
+                    input.style.textTransform = "uppercase";
+                    cell.appendChild(input);
+                    inputs.push({ input, correctLetter: crosswordGrid[i][j].replace(/\d+/g, '') });
+
+                    if (subscript) {
+                        const subscriptElement = document.createElement("span");
+                        subscriptElement.classList.add("subscript");
+                        subscriptElement.textContent = subscript;
+                        cell.appendChild(subscriptElement);
+                    }
+                }
+                crosswordContainer.appendChild(cell);
+            }
+        }
+
+        function checkAnswers() {
+            let score = 0;
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].input.value.toUpperCase() === inputs[i].correctLetter) {
+                    inputs[i].input.style.backgroundColor = "#90EE90"; // Green for correct
+                    score++;
+                } else {
+                    inputs[i].input.style.backgroundColor = "#FF6347"; // Red for incorrect
+                }
+            }
+
+            document.getElementById("score").innerText = `Your Score: ${score}/${inputs.length}`;
+        }
+    </script>
+</body>
+</html>

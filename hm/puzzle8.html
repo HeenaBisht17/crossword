@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ramayana Animal-Themed Crossword</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    .crossword {
+      display: grid;
+      grid-template-columns: repeat(13, 40px);
+      gap: 0;
+      justify-content: center;
+      margin: 20px auto;
+      padding: 0;
+    }
+    .cell {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #000;
+      position: relative;
+      background-color: #fff;
+      box-sizing: border-box;
+    }
+    .black-cell {
+      background-color: #000;
+    }
+    .cell input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      text-align: center;
+      font-size: 18px;
+      text-transform: uppercase;
+      background-color: white;
+    }
+    .subscript {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .correct {
+      background-color: #90EE90 !important;
+    }
+    .incorrect {
+      background-color: #FF6347 !important;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    .hints {
+      text-align: left;
+      margin: 20px auto;
+      width: 80%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ramayana Animal-Themed Crossword</h1>
+  <div class="crossword" id="crossword"></div>
+  <button onclick="checkAnswers()">Submit</button>
+  <p id="score"></p>
+  <div class="hints">
+    <h2>Hints</h2>
+    <strong>Across:</strong><br>
+    1️⃣ Monkey god who served Ram______<br>
+    2️⃣ Bird who fought Ravan______<br>
+    3️⃣ King of monkeys who helped build Ram Setu______<br>
+    4️⃣ Bear who supported Ram in battle________<br>
+    <br><strong>Down:</strong><br>
+    5️⃣ Hanuman's mother_______<br>
+    6️⃣ Elder brother of Sugriva________<br>
+    7️⃣ Messenger monkey who helped Hanuman________<br>
+    8️⃣ Monkey who helped build the bridge_______<br>
+  </div>
+
+  <script>
+    const crosswordData = Array.from({ length: 13 }, () => Array(13).fill(""));
+
+    // Across words
+    const acrossWords = [
+      { word: "HANUMAN", row: 0, col: 0, label: 1 },
+      { word: "JATAYU", row: 2, col: 0, label: 2 },
+      { word: "SUGRIVA", row: 4, col: 0, label: 3 },
+      { word: "JAMBAVAN", row: 6, col: 0, label: 4 }
+    ];
+
+    // Down words
+    const downWords = [
+      { word: "ANJANI", row: 0, col: 8, label: 5 },
+      { word: "VALI", row: 0, col: 10, label: 6 },
+      { word: "NALA", row: 0, col: 11, label: 7 },
+      { word: "NEELA", row: 0, col: 12, label: 8 }
+    ];
+
+    acrossWords.forEach(({ word, row, col, label }) => {
+      for (let i = 0; i < word.length; i++) {
+        crosswordData[row][col + i] = (i === 0 ? word[i] + label : word[i]);
+      }
+    });
+
+    downWords.forEach(({ word, row, col, label }) => {
+      for (let i = 0; i < word.length; i++) {
+        crosswordData[row + i][col] = (i === 0 ? word[i] + label : word[i]);
+      }
+    });
+
+    const crosswordContainer = document.getElementById("crossword");
+    let inputs = [];
+
+    for (let i = 0; i < crosswordData.length; i++) {
+      for (let j = 0; j < crosswordData[i].length; j++) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+
+        if (crosswordData[i][j] === "") {
+          cell.classList.add("black-cell");
+        } else {
+          let value = crosswordData[i][j].replace(/\d+/g, '');
+          let sub = crosswordData[i][j].match(/\d+/g);
+          const input = document.createElement("input");
+          input.maxLength = 1;
+          cell.appendChild(input);
+          inputs.push({ input, value });
+
+          if (sub) {
+            const subEl = document.createElement("span");
+            subEl.classList.add("subscript");
+            subEl.textContent = sub;
+            cell.appendChild(subEl);
+          }
+        }
+
+        crosswordContainer.appendChild(cell);
+      }
+    }
+
+    function checkAnswers() {
+      let score = 0;
+      inputs.forEach(obj => {
+        if (obj.input.value.toUpperCase() === obj.value) {
+          obj.input.classList.add("correct");
+          obj.input.classList.remove("incorrect");
+          score++;
+        } else {
+          obj.input.classList.add("incorrect");
+          obj.input.classList.remove("correct");
+        }
+      });
+      document.getElementById("score").textContent = `Your Score: ${score}/${inputs.length}`;
+    }
+  </script>
+</body>
+</html>

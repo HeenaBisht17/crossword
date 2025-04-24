@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sita's Life Crossword</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f8f8;
+        }
+        .crossword {
+            display: grid;
+            grid-template-columns: repeat(14, 40px);
+            gap: 2px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid #000;
+            text-transform: uppercase;
+            position: relative;
+            background-color: #fff;
+        }
+        .black-cell {
+            background-color: #000;
+        }
+        .subscript {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .correct {
+            background-color: #90EE90 !important; /* Green for correct */
+        }
+        .incorrect {
+            background-color: #FF6347 !important; /* Red for incorrect */
+        }
+        .hints {
+            margin-top: 20px;
+            text-align: left;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sita's Life Crossword</h1>
+    <div class="crossword" id="crossword"></div>
+    <button onclick="checkAnswers()">Submit</button>
+    <p id="score"></p>
+    
+    <div class="hints">
+        <h2>Hints:</h2>
+        <strong>Across:</strong><br>
+        1️⃣ King who found baby Sita while plowing a field_____<br>
+        2️⃣ Sita’s trial by fire to prove her purity_______<br>
+        3️⃣ Sita’s sons who later met Ram_______<br>
+        4️⃣ The sage who gave shelter to Sita during exile________<br>
+        5️⃣ The demoness who guarded Sita in Lanka<br>
+        6️⃣ Sita’s other name meaning ‘goddess of agriculture’_______
+        7️⃣ The mountain where Sita was kept in Lanka________<br>
+        8️⃣ Sita’s other name meaning ‘daughter of the earth_______<br>
+                <br>>
+        <br>
+        <strong>Down:</strong><br>
+        9️⃣ Demon king who kidnapped Sita________<br>
+        🔟 Another name for Goddess Parvati, whom Sita worshipped before her Swayamvar _______<br>
+        1️⃣1️⃣ Sita’s elder sister_______<br>
+        1️⃣2️⃣ A beautiful garden in Lanka where Sita was kept before being taken to Ashok Vatika-Nandanvan – ______<br>
+        1️⃣3️⃣ The place where Sita was taken after Lanka_______<br>
+        1️⃣4️⃣ Sita’s mother_______<br>
+    </div>
+    
+    <script>
+        const crosswordGrid = [
+            ["", "", "", "", "", "", "", "", "", "", "","U11","", ""],
+            ["", "", "", "S14", "", "", "", "", "A13", "", "","R","", ""],
+            ["", "", "", "U", "", "", "", "", "S", "", "","M","", ""],
+            ["", "", "", "N", "", "", "", "", "H", "", "","I","", ""],
+            ["R9", "", "J1", "A", "N", "A", "K", "", "O", "", "","L","", ""],
+            ["A2", "G10", "N12", "I", "P", "A", "R", "I", "K", "S", "H","A","", ""],
+            ["V", "A", "A", "N", "", "", "L3", "U", "V", "K", "U","S","H", ""],
+            ["A", "U", "N", "A", "", "", "", "V4", "A", "L", "M","I","K", "I"],
+            ["N", "R", "D", "", "T5", "R", "I", "J", "T", "A", "","","", ""],
+            ["", "I", "A", "", "B8", "H", "U", "M", "I", "J", "A","","", ""],
+            ["", "", "V", "", "", "T7", "R", "I", "K", "U", "T","A","", ""],
+            ["", "", "A", "", "", "", "", "V6", "A", "U", "D","H","A", ""],
+            ["", "", "N", "", "", "", "", "", "", "", "","","", ""]
+        ]
+        const correctAnswers = [
+            "U", "S", "A", "R", "U", "S", "M", "N", "H", "I", "R", "J", "A", "N",
+            "A", "K", "O", "L", "A", "G", "N", "I", "P", "A", "R", "I", "S",
+            "H", "A", "V", "A", "A", "N", "L", "U", "V", "K", "U", "S",
+            "H", "A", "U", "N", "A", "V", "A", "L", "M", "I", "K", "I", "N", "R", "D", "T", "R"
+            , "I" , "J", "A", "V", "T", "R", "I", "K", "U", "T", "A", "A", "V", "A",
+            "U", "D", "H", "A", "N"
+        ];
+
+        const crosswordContainer = document.getElementById("crossword");
+        let inputs = [];
+
+        for (let i = 0; i < 13; i++) {
+            for (let j = 0; j < 14; j++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                
+                if (crosswordGrid[i][j] === "") {
+                    cell.classList.add("black-cell");
+                } else {
+                    let letter = crosswordGrid[i][j].replace(/\d+/g, '');
+                    let subscript = crosswordGrid[i][j].match(/\d+/g);
+                    let input = document.createElement("input");
+                    input.type = "text";
+                    input.maxLength = 1;
+                    input.style.width = "100%";
+                    input.style.height = "100%";
+                    input.style.border = "none";
+                    input.style.textAlign = "center";
+                    input.style.fontSize = "18px";
+                    input.style.backgroundColor = "white";
+                    input.style.textTransform = "uppercase";
+                    cell.appendChild(input);
+                    inputs.push(input);
+                    
+                    if (subscript) {
+                        const subscriptElement = document.createElement("span");
+                        subscriptElement.classList.add("subscript");
+                        subscriptElement.textContent = subscript;
+                        cell.appendChild(subscriptElement);
+                    }
+                }
+                crosswordContainer.appendChild(cell);
+            }
+        }
+
+        function checkAnswers() {
+            let score = 0;
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].value.toUpperCase() === correctAnswers[i]) {
+                    inputs[i].style.backgroundColor = "#90EE90"; // Green for correct
+                    score++;
+                } else {
+                    inputs[i].style.backgroundColor = "#FF6347"; // Red for incorrect
+                }
+            }
+
+            document.getElementById("score").innerText = `Your Score: ${score}/${correctAnswers.length}`;
+        }
+    </script>
+</body>
+</html>

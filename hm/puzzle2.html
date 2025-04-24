@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location-Based Crossword</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f8f8;
+        }
+        .crossword {
+            display: grid;
+            grid-template-columns: repeat(12, 40px);
+            gap: 2px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid #000;
+            text-transform: uppercase;
+            position: relative;
+            background-color: #fff;
+        }
+        .black-cell {
+            background-color: #000;
+        }
+        .subscript {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .hints {
+            margin-top: 20px;
+            text-align: left;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ramayan Location Crossword</h1>
+    <div class="crossword" id="crossword"></div>
+    <button onclick="checkAnswers()">Submit</button>
+    <p id="score"></p>
+    
+    <div class="hints">
+        <h2>Hints:</h2>
+        <strong>Across:</strong><br>
+        1️⃣ Birthplace of Lord Ram_______<br>
+2️⃣ Kingdom ruled by Ravan_______<br>
+3️⃣ Mithila is also known as______<br>
+        <br>
+        <strong>Down:</strong><br>
+        4️⃣ The pkingdom of King Janak_______<br>
+5️⃣ River where King Dasharath performed a yajna for sons_______<br>
+6️⃣ The place where Ravan kept Sita captive________<br>
+7️⃣ Demoness Shurpanakha’s home_______<br>
+8️⃣ Bridge built by Vanaras to reach Lanka_______<br>
+    </div>
+    
+    <script>
+        const crosswordGrid = [
+            ["", "", "", "", "", "", "A6", "", "", "D7", "", ""],
+            ["", "", "", "", "", "", "S", "", "", "A", "", ""],
+            ["", "", "", "", "", "S5", "H", "", "", "N", "", ""],
+            ["", "", "", "", "M4", "A", "O", "", "", "D", "", ""],
+            ["", "", "", "", "I", "R", "K", "", "", "K", "", ""],
+            ["R8", "", "", "", "T", "A", "V", "", "", "A", "", ""],
+            ["A1", "Y", "O", "D", "H", "Y", "A", "", "", "R", "", ""],
+            ["M", "", "", "", "I", "U", "T", "", "", "A", "", ""],
+            ["S", "", "", "", "L", "", "I", "", "", "N", "", ""],
+            ["E", "", "", "", "A", "", "K", "", "", "Y", "", ""],
+            ["T", "", "", "", "", "L2", "A", "N", "K", "A", "", ""],
+            ["U", "", "", "", "J3", "A", "N", "A", "K", "P", "U", "R"]
+        ]
+        const correctAnswers = [
+            "A", "D", "S", "A", "S", "H", "N", "M", "A", "O", "D", "I", "R", "K",
+            "K", "R", "T", "A", "V", "A", "A", "Y", "O", "D", "H", "Y", "A",
+            "R", "M", "I", "U", "T", "A", "S", "L", "I", "N", "E", "A",
+            "K", "Y", "T", "L", "A", "N", "K", "A", "U", "J", "A", "N", "A", "K", "P", "U", "R"
+            
+        ];
+
+
+        const crosswordContainer = document.getElementById("crossword");
+        let inputs = [];
+        
+        for (let i = 0; i < 13; i++) {
+            for (let j = 0; j < 12; j++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                
+                if (crosswordGrid[i][j] === "") {
+                    cell.classList.add("black-cell");
+                } else {
+                    let letter = crosswordGrid[i][j].replace(/\d+/g, '');
+                    let subscript = crosswordGrid[i][j].match(/\d+/g);
+                    let input = document.createElement("input");
+                    input.type = "text";
+                    input.maxLength = 1;
+                    input.style.width = "100%";
+                    input.style.height = "100%";
+                    input.style.border = "none";
+                    input.style.textAlign = "center";
+                    input.style.fontSize = "18px";
+                    cell.appendChild(input);
+                    inputs.push(input);
+                    
+                    if (subscript) {
+                        const subscriptElement = document.createElement("span");
+                        subscriptElement.classList.add("subscript");
+                        subscriptElement.textContent = subscript;
+                        cell.appendChild(subscriptElement);
+                    }
+                }
+                crosswordContainer.appendChild(cell);
+            }
+        }
+
+        // function checkAnswers() {
+        //     // const correctAnswers = "AYODHYA LANKA ASHOK VATIKA RAM SETU".replace(/\s/g, '').split('');
+        //     let score = 0;for (let i = 0; i < inputs.length; i++) {
+        //         if (inputs[i].value.toUpperCase() === correctAnswers[i]) {
+        //             inputs[i].style.backgroundColor = "#90EE90"; // Green for correct
+        //             score++;
+        //         } else {
+        //             inputs[i].style.backgroundColor = "#FF6347"; // Red for incorrect
+        //         }
+        //     }
+            
+        //     // for (let i = 0; i < inputs.length; i++) {
+        //     //     if (inputs[i].value.toUpperCase() === correctAnswers[i]) {
+        //     //         score++;
+        //     //     }
+        //     // }
+            
+        //     document.getElementById("score").innerText = `Your Score: ${score}/${correctAnswers.length}`;
+        // }
+
+        function checkAnswers() {
+            let score = 0;
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].value.toUpperCase() === correctAnswers[i]) {
+                    inputs[i].style.backgroundColor = "#90EE90"; // Green for correct
+                    score++;
+                } else {
+                    inputs[i].style.backgroundColor = "#FF6347"; // Red for incorrect
+                }
+            }
+
+            document.getElementById("score").innerText = `Your Score: ${score}/${correctAnswers.length}`;
+        }
+
+    </script>
+</body>
+</html>

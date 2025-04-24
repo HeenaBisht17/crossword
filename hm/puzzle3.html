@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramayan Event Crossword</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f8f8;
+        }
+        .crossword {
+            display: grid;
+            grid-template-columns: repeat(15, 40px);
+            gap: 2px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid #000;
+            text-transform: uppercase;
+            position: relative;
+            background-color: #fff;
+        }
+        .black-cell {
+            background-color: #000;
+        }
+        .subscript {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .hints {
+            margin-top: 20px;
+            text-align: left;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Event Based Crossword</h1>
+    <div class="crossword" id="crossword"></div>
+    <button onclick="checkAnswers()">Submit</button>
+    <p id="score"></p>
+    
+    <div class="hints">
+        <h2>Hints:</h2>
+        <strong>Across:</strong><br>
+        1️⃣ The moment Hanuman meets Sita in Ashok Vatika_____<br>
+2️⃣ Festival when Lord Ram returned to Ayodhya_______<br>
+3️⃣ Building of the bridge to Lanka_______<br>
+4️⃣ Ram and Ravan's final battle________<br>
+5️⃣ Ravan abducts Sita and takes her to Lanka_______<br>
+6️⃣ Lakshman draws a protective line around Sita
+        <br>
+        <strong>Down:</strong><br>
+        7️⃣ The demoness killed by Ram and Lakshman_______<br>
+        8️⃣ Sita’s trial by fire to prove her purity_______<br>
+        9️⃣ Ram coronated as the king of Ayodhya________<br>
+        🔟 Hanuman burned Lanka with his tail in this event_______<br>
+        1️⃣1️⃣ Ravan kidnapped Sita________<br>
+        1️⃣2️⃣ Ram, Lakshman, and Sita leave Ayodhya for the forest______<br>
+    </div>
+    
+    <script>
+        const crosswordGrid = [
+            ["", "", "", "", "", "", "8A", "", "", "", "","","", "", ""],
+            ["", "", "", "", "", "", "G", "", "", "L10", "","","", "", ""],
+            ["", "", "", "", "", "", "N", "R9", "", "A", "","","", "", ""],
+            ["", "", "", "", "", "", "I", "A", "", "N", "","","", "T7", ""],
+            ["", "", "", "", "", "", "P", "M", "", "K", "","","", "A", ""],
+            ["", "", "", "", "", "", "A", "R", "", "A", "","","", "D", ""],
+            ["", "", "", "", "", "", "R", "A", "", "D", "","","", "K", ""],
+            ["", "D2", "I", "W", "A", "L", "I", "J", "", "A", "","","", "A", ""],
+            ["", "S11", "", "", "", "", "K", "Y", "", "H", "","","", "", ""],
+            ["", "I", "", "", "", "", "S5", "I", "T", "A", "H","A","R","A","N"],
+            ["", "T", "", "", "", "", "H", "", "", "N", "","","V12", "", ""],
+            ["L6", "A", "K", "S", "H", "M", "A", "N", "R", "E", "K","H","A", "", ""],
+            ["", "H", "", "", "", "", "", "", "", "", "","","N", "", ""],
+            ["", "A", "", "R3", "A", "M", "S", "E", "T", "U", "","","V", "", ""],
+            ["", "R", "", "", "", "", "", "", "", "", "","","A", "", ""],
+            ["R4", "A", "M", "R", "A", "V", "A", "N", "Y", "U", "D","H","A", "", ""],
+            ["", "N", "", "", "", "", "", "", "", "", "","","S", "", ""]
+        ]
+        const correctAnswers = [
+            "A", "G", "L", "N", "R", "A", "I", "A", "N", "T", "P", "M", "K", "A",
+            "A", "R", "A", "D", "R", "A", "D", "K", "D", "I", "W", "A", "L",
+            "I", "J", "A", "A", "S", "K", "Y", "H", "I", "S", "I", "T",
+            "A", "H", "A", "R", "A", "N", "T", "H", "N", "V", "L", "A", "K", "S", "H", "M", "A"
+            , "N" , "R", "E", "K", "H", "A", "H", "N", "A", "R", "A", "M", "S", "E",
+            "T", "U", "V", "R", "A" , "M", "R", "A", "V", "A", "N", "Y", "U", "D", "H",
+            "A", "N", "S"
+        ];
+
+        
+        const crosswordContainer = document.getElementById("crossword");
+        let inputs = [];
+        
+        for (let i = 0; i < 17; i++) {
+            for (let j = 0; j < 15; j++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                
+                if (crosswordGrid[i][j] === "") {
+                    cell.classList.add("black-cell");
+                } else {
+                    let letter = crosswordGrid[i][j].replace(/\d+/g, '');
+                    let subscript = crosswordGrid[i][j].match(/\d+/g);
+                    let input = document.createElement("input");
+                    input.type = "text";
+                    input.maxLength = 1;
+                    input.style.width = "100%";
+                    input.style.height = "100%";
+                    input.style.border = "none";
+                    input.style.textAlign = "center";
+                    input.style.fontSize = "18px";
+                    cell.appendChild(input);
+                    inputs.push(input);
+                    
+                    if (subscript) {
+                        const subscriptElement = document.createElement("span");
+                        subscriptElement.classList.add("subscript");
+                        subscriptElement.textContent = subscript;
+                        cell.appendChild(subscriptElement);
+                    }
+                }
+                crosswordContainer.appendChild(cell);
+            }
+        }
+
+        // function checkAnswers() {
+        //     // const correctAnswers = "VANVAS SITA HARAN LANKA DAHAN RAM SETU LAKSHMAN REKHA RAVAN VADH AGNI PARIKSHA RAM RAJYA".replace(/\s/g, '').split('');
+        //     let score = 0;
+            
+        //     for (let i = 0; i < inputs.length; i++) {
+        //         if (inputs[i].value.toUpperCase() === correctAnswers[i]) {
+        //             score++;
+        //         }
+        //     }
+            
+        //     document.getElementById("score").innerText = `Your Score: ${score}/${correctAnswers.length}`;
+        // }
+
+        function checkAnswers() {
+            let score = 0;
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].value.toUpperCase() === correctAnswers[i]) {
+                    inputs[i].style.backgroundColor = "#90EE90"; // Green for correct
+                    score++;
+                } else {
+                    inputs[i].style.backgroundColor = "#FF6347"; // Red for incorrect
+                }
+            }
+
+            document.getElementById("score").innerText = `Your Score: ${score}/${correctAnswers.length}`;
+        }
+    </script>
+</body>
+</html>
